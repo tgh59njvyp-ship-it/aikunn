@@ -132,10 +132,38 @@ export const DatabaseStudio: React.FC<DatabaseStudioProps> = ({
     return `-- Table Schema DDL Migration for ${selectedTable.name}\n${createSql}\n\n-- Sample Data Ingestion\n${sampleInserts}`;
   };
 
+  const [mobileTab, setMobileTab] = useState<"tables" | "content">("content");
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+      {/* Mobile Sub-Navigation Bar (visible only on mobile) */}
+      <div className="flex md:hidden bg-slate-900 border-b border-slate-800 p-1.5 shrink-0 justify-around">
+        <button
+          onClick={() => setMobileTab("tables")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "tables" ? "bg-cyan-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Database className="w-3.5 h-3.5" />
+          <span>テーブル一覧</span>
+        </button>
+        <button
+          onClick={() => setMobileTab("content")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "content" ? "bg-cyan-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Table className="w-3.5 h-3.5" />
+          <span>データ・スキーマ</span>
+        </button>
+      </div>
+
       {/* Left Column: Tables Navigation */}
-      <div className="w-72 border-r border-slate-800 bg-slate-900 flex flex-col shrink-0">
+      <div
+        className={`w-full md:w-72 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900 flex flex-col shrink-0 ${
+          mobileTab === "tables" ? "flex flex-1" : "hidden md:flex"
+        }`}
+      >
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Database className="w-4 h-4 text-cyan-400" />
@@ -157,7 +185,10 @@ export const DatabaseStudio: React.FC<DatabaseStudioProps> = ({
             return (
               <div
                 key={table.id}
-                onClick={() => setSelectedTableId(table.id)}
+                onClick={() => {
+                  setSelectedTableId(table.id);
+                  if (window.innerWidth < 768) setMobileTab("content");
+                }}
                 className={`group flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
                   isSelected
                     ? "bg-cyan-500/10 border-cyan-500 text-white shadow-sm"
@@ -171,7 +202,7 @@ export const DatabaseStudio: React.FC<DatabaseStudioProps> = ({
                 <span className="text-[10px] text-slate-500 font-mono">{table.rows.length} rows</span>
                 <button
                   onClick={(e) => handleDeleteTable(table.id, e)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-rose-400 hover:bg-rose-500/20 rounded"
+                  className="opacity-80 md:opacity-0 group-hover:opacity-100 p-1 text-rose-400 hover:bg-rose-500/20 rounded"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -193,41 +224,45 @@ export const DatabaseStudio: React.FC<DatabaseStudioProps> = ({
       </div>
 
       {/* Main View Area */}
-      <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+      <div
+        className={`flex-1 flex flex-col bg-slate-950 overflow-hidden ${
+          mobileTab === "content" ? "flex" : "hidden md:flex"
+        }`}
+      >
         {/* Header Tabs */}
-        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700">
+        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-3 sm:px-4 flex items-center justify-between shrink-0 gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center space-x-1 sm:space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700">
             <button
               onClick={() => setActiveTab("data")}
-              className={`px-3 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition ${
+              className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition whitespace-nowrap ${
                 activeTab === "data" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-white"
               }`}
             >
               <Table className="w-3.5 h-3.5" />
-              <span>データグリッド ({selectedTable?.rows.length || 0})</span>
+              <span>データ ({selectedTable?.rows.length || 0})</span>
             </button>
             <button
               onClick={() => setActiveTab("schema")}
-              className={`px-3 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition ${
+              className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition whitespace-nowrap ${
                 activeTab === "schema" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-white"
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
-              <span>スキーマ設計 ({selectedTable?.columns.length || 0})</span>
+              <span>スキーマ ({selectedTable?.columns.length || 0})</span>
             </button>
             <button
               onClick={() => setActiveTab("sql")}
-              className={`px-3 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition ${
+              className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition whitespace-nowrap ${
                 activeTab === "sql" ? "bg-cyan-600 text-white shadow" : "text-slate-400 hover:text-white"
               }`}
             >
               <FileCode className="w-3.5 h-3.5" />
-              <span>SQL DDL</span>
+              <span>SQL</span>
             </button>
           </div>
 
           {selectedTable && (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 shrink-0">
               <span className="text-xs font-mono text-cyan-300 font-bold">{selectedTable.name}</span>
             </div>
           )}

@@ -120,10 +120,38 @@ export const ApiStudio: React.FC<ApiStudioProps> = ({
     }
   };
 
+  const [mobileTab, setMobileTab] = useState<"list" | "detail">("detail");
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+      {/* Mobile Sub-Navigation Bar (visible only on mobile) */}
+      <div className="flex md:hidden bg-slate-900 border-b border-slate-800 p-1.5 shrink-0 justify-around">
+        <button
+          onClick={() => setMobileTab("list")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "list" ? "bg-amber-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Zap className="w-3.5 h-3.5" />
+          <span>API一覧</span>
+        </button>
+        <button
+          onClick={() => setMobileTab("detail")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "detail" ? "bg-amber-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Code className="w-3.5 h-3.5" />
+          <span>設計・テスト</span>
+        </button>
+      </div>
+
       {/* Left Column: API Endpoints List */}
-      <div className="w-80 border-r border-slate-800 bg-slate-900 flex flex-col shrink-0">
+      <div
+        className={`w-full md:w-80 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900 flex flex-col shrink-0 ${
+          mobileTab === "list" ? "flex flex-1" : "hidden md:flex"
+        }`}
+      >
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Zap className="w-4 h-4 text-amber-400" />
@@ -145,7 +173,10 @@ export const ApiStudio: React.FC<ApiStudioProps> = ({
             return (
               <div
                 key={route.id}
-                onClick={() => setSelectedRouteId(route.id)}
+                onClick={() => {
+                  setSelectedRouteId(route.id);
+                  if (window.innerWidth < 768) setMobileTab("detail");
+                }}
                 className={`group flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
                   isSelected
                     ? "bg-amber-500/10 border-amber-500 text-white shadow-sm"
@@ -161,7 +192,7 @@ export const ApiStudio: React.FC<ApiStudioProps> = ({
 
                 <button
                   onClick={(e) => handleDeleteRoute(route.id, e)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-rose-400 hover:bg-rose-500/20 rounded"
+                  className="opacity-80 md:opacity-0 group-hover:opacity-100 p-1 text-rose-400 hover:bg-rose-500/20 rounded"
                 >
                   <Trash2 className="w-3 h-3" />
                 </button>
@@ -183,36 +214,40 @@ export const ApiStudio: React.FC<ApiStudioProps> = ({
       </div>
 
       {/* Main Column: Designer / Tester Split View */}
-      <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+      <div
+        className={`flex-1 flex flex-col bg-slate-950 overflow-hidden ${
+          mobileTab === "detail" ? "flex" : "hidden md:flex"
+        }`}
+      >
         {/* Mode Switcher Header */}
-        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700">
+        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-3 sm:px-4 flex items-center justify-between shrink-0 gap-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 bg-slate-800 p-1 rounded-lg border border-slate-700">
             <button
               onClick={() => setActiveTab("designer")}
-              className={`px-3 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition ${
+              className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition ${
                 activeTab === "designer" ? "bg-amber-600 text-white shadow" : "text-slate-400 hover:text-white"
               }`}
             >
               <Code className="w-3.5 h-3.5" />
-              <span>エンドポイント設計</span>
+              <span>設計</span>
             </button>
             <button
               onClick={() => setActiveTab("tester")}
-              className={`px-3 py-1 rounded text-xs font-medium flex items-center space-x-1.5 transition ${
+              className={`px-2.5 py-1 rounded text-xs font-medium flex items-center space-x-1 transition ${
                 activeTab === "tester" ? "bg-amber-600 text-white shadow" : "text-slate-400 hover:text-white"
               }`}
             >
               <Send className="w-3.5 h-3.5" />
-              <span>API テスト実行</span>
+              <span>テスト実行</span>
             </button>
           </div>
 
           {selectedRoute && (
-            <div className="flex items-center space-x-2 font-mono text-xs">
-              <span className={`px-2 py-0.5 font-bold rounded border ${getMethodBadgeClass(selectedRoute.method)}`}>
+            <div className="flex items-center space-x-1.5 font-mono text-[11px] sm:text-xs truncate">
+              <span className={`px-1.5 py-0.5 font-bold rounded border ${getMethodBadgeClass(selectedRoute.method)}`}>
                 {selectedRoute.method}
               </span>
-              <span className="text-slate-300">{selectedRoute.path}</span>
+              <span className="text-slate-300 truncate">{selectedRoute.path}</span>
             </div>
           )}
         </div>

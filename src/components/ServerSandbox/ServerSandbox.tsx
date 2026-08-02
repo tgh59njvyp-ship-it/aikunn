@@ -119,50 +119,50 @@ app.listen(PORT, "0.0.0.0", () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
       {/* Top Controller Bar */}
-      <div className="h-16 border-b border-slate-800 bg-slate-900 px-6 flex items-center justify-between shrink-0">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Server className="w-5 h-5 text-indigo-400" />
-            <span className="font-bold text-white text-sm sm:text-base">WebDev Node.js Express Runtime</span>
+      <div className="h-14 sm:h-16 border-b border-slate-800 bg-slate-900 px-3 sm:px-6 flex items-center justify-between shrink-0 gap-2">
+        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+            <Server className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400 shrink-0" />
+            <span className="font-bold text-white text-xs sm:text-base truncate">Express Server</span>
           </div>
 
-          <div className="flex items-center space-x-2 bg-slate-800 px-3 py-1 rounded-full border border-slate-700 text-xs">
-            <span className={`w-2.5 h-2.5 rounded-full ${serverConfig.isRunning ? "bg-emerald-400 animate-pulse" : "bg-slate-500"}`} />
+          <div className="flex items-center space-x-1.5 bg-slate-800 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-slate-700 text-[10px] sm:text-xs shrink-0">
+            <span className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${serverConfig.isRunning ? "bg-emerald-400 animate-pulse" : "bg-slate-500"}`} />
             <span className="font-mono text-slate-200">
-              {serverConfig.isRunning ? `ONLINE : Port ${serverConfig.port}` : "OFFLINE"}
+              {serverConfig.isRunning ? `:3000 Active` : "OFFLINE"}
             </span>
           </div>
         </div>
 
         <button
           onClick={toggleServer}
-          className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center space-x-2 transition shadow-lg ${
+          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs font-bold flex items-center space-x-1.5 transition shadow-lg shrink-0 ${
             serverConfig.isRunning
               ? "bg-rose-600 hover:bg-rose-500 text-white"
               : "bg-emerald-600 hover:bg-emerald-500 text-white"
           }`}
         >
-          {serverConfig.isRunning ? <Square className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
-          <span>{serverConfig.isRunning ? "サーバー停止" : "サーバー起動"}</span>
+          {serverConfig.isRunning ? <Square className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+          <span>{serverConfig.isRunning ? "停止" : "起動"}</span>
         </button>
       </div>
 
       {/* Main Content Pane */}
       <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
-        {/* Left Subnav */}
-        <div className="w-full sm:w-56 bg-slate-900/80 border-b sm:border-b-0 sm:border-r border-slate-800 p-3 space-y-1 shrink-0">
+        {/* Left Subnav / Mobile Horizontal Tab Bar */}
+        <div className="w-full sm:w-56 bg-slate-900/80 border-b sm:border-b-0 sm:border-r border-slate-800 p-1.5 sm:p-3 flex sm:flex-col overflow-x-auto no-scrollbar space-x-1 sm:space-x-0 sm:space-y-1 shrink-0">
           {[
             { id: "logs" as const, label: "アクセスログ", icon: <Terminal className="w-4 h-4" /> },
             { id: "metrics" as const, label: "システムリソース", icon: <Activity className="w-4 h-4" /> },
             { id: "config" as const, label: "サーバー設定", icon: <Shield className="w-4 h-4" /> },
-            { id: "code" as const, label: "server.js コード", icon: <Code className="w-4 h-4" /> },
+            { id: "code" as const, label: "コード", icon: <Code className="w-4 h-4" /> },
           ].map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium transition ${
+              className={`flex items-center space-x-1.5 sm:space-x-2.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-xs font-medium transition whitespace-nowrap ${
                 activeTab === item.id
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-slate-400 hover:text-white hover:bg-slate-800"

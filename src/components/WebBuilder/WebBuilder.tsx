@@ -148,10 +148,47 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
+  const [mobileTab, setMobileTab] = useState<"structure" | "preview" | "properties">("preview");
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] bg-slate-950 overflow-hidden">
+      {/* Mobile Sub-Navigation Bar (visible only on mobile) */}
+      <div className="flex md:hidden bg-slate-900 border-b border-slate-800 p-1.5 shrink-0 justify-around">
+        <button
+          onClick={() => setMobileTab("structure")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "structure" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>ページ構造</span>
+        </button>
+        <button
+          onClick={() => setMobileTab("preview")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "preview" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Eye className="w-3.5 h-3.5" />
+          <span>プレビュー</span>
+        </button>
+        <button
+          onClick={() => setMobileTab("properties")}
+          className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+            mobileTab === "properties" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Edit3 className="w-3.5 h-3.5" />
+          <span>プロパティ</span>
+        </button>
+      </div>
+
       {/* Left Column: Section Outline & Palette */}
-      <div className="w-80 border-r border-slate-800 bg-slate-900 flex flex-col shrink-0">
+      <div
+        className={`w-full md:w-80 border-b md:border-b-0 md:border-r border-slate-800 bg-slate-900 flex flex-col shrink-0 ${
+          mobileTab === "structure" ? "flex flex-1" : "hidden md:flex"
+        }`}
+      >
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Layers className="w-4 h-4 text-indigo-400" />
@@ -173,7 +210,10 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
             return (
               <div
                 key={section.id}
-                onClick={() => setSelectedSectionId(section.id)}
+                onClick={() => {
+                  setSelectedSectionId(section.id);
+                  if (window.innerWidth < 768) setMobileTab("properties");
+                }}
                 className={`group flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
                   isSelected
                     ? "bg-indigo-600/20 border-indigo-500 text-white shadow-sm"
@@ -185,7 +225,7 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
                   <div className="truncate font-medium">{section.title || section.type}</div>
                 </div>
 
-                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center space-x-1 opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     disabled={idx === 0}
                     onClick={(e) => handleMoveSection(idx, "up", e)}
@@ -240,9 +280,13 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
       </div>
 
       {/* Center Canvas Preview Area */}
-      <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+      <div
+        className={`flex-1 flex flex-col bg-slate-950 overflow-hidden ${
+          mobileTab === "preview" ? "flex" : "hidden md:flex"
+        }`}
+      >
         {/* Canvas Toolbar */}
-        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-4 flex items-center justify-between shrink-0">
+        <div className="h-12 border-b border-slate-800 bg-slate-900/60 px-3 sm:px-4 flex items-center justify-between shrink-0">
           {/* Viewport controls */}
           <div className="flex items-center space-x-1 bg-slate-800/80 p-1 rounded-lg border border-slate-700/60">
             <button
@@ -279,31 +323,31 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
             <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700">
               <button
                 onClick={() => setViewMode("visual")}
-                className={`p-1.5 rounded text-xs flex items-center space-x-1 ${
+                className={`p-1 rounded sm:p-1.5 text-xs flex items-center space-x-1 ${
                   viewMode === "visual" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
                 }`}
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>ビジュアル</span>
+                <span className="text-[11px] sm:text-xs">ビジュアル</span>
               </button>
               <button
                 onClick={() => setViewMode("code")}
-                className={`p-1.5 rounded text-xs flex items-center space-x-1 ${
+                className={`p-1 rounded sm:p-1.5 text-xs flex items-center space-x-1 ${
                   viewMode === "code" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
                 }`}
               >
                 <Code className="w-3.5 h-3.5" />
-                <span>HTMLコード</span>
+                <span className="text-[11px] sm:text-xs">HTMLコード</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Canvas Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex justify-center bg-slate-950">
+        <div className="flex-1 overflow-y-auto overflow-x-auto p-2 sm:p-6 flex justify-center bg-slate-950">
           {viewMode === "visual" ? (
             <div
-              className={`transition-all duration-300 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl h-fit my-auto ${
+              className={`transition-all duration-300 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl h-fit my-auto max-w-full ${
                 viewportMode === "desktop"
                   ? "w-full max-w-5xl"
                   : viewportMode === "tablet"
@@ -335,7 +379,9 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
                   return (
                     <div
                       key={sec.id}
-                      onClick={() => setSelectedSectionId(sec.id)}
+                      onClick={() => {
+                        setSelectedSectionId(sec.id);
+                      }}
                       className={`relative transition-all cursor-pointer ${bgClass} ${
                         isSelected ? "ring-2 ring-indigo-500 ring-inset" : "hover:opacity-95"
                       }`}
@@ -348,19 +394,19 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
                       )}
 
                       {sec.type === "custom" && sec.customHtml ? (
-                        <div className="p-8" dangerouslySetInnerHTML={{ __html: sec.customHtml }} />
+                        <div className="p-4 sm:p-8" dangerouslySetInnerHTML={{ __html: sec.customHtml }} />
                       ) : (
-                        <div className="py-12 px-6 sm:px-10 text-center max-w-4xl mx-auto">
+                        <div className="py-8 sm:py-12 px-4 sm:px-10 text-center max-w-4xl mx-auto">
                           {sec.badge && (
                             <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                               {sec.badge}
                             </span>
                           )}
-                          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                          <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight mb-2">
                             {sec.title}
                           </h2>
                           {sec.subtitle && (
-                            <p className="text-sm sm:text-base opacity-80 mb-4 max-w-xl mx-auto">
+                            <p className="text-xs sm:text-base opacity-80 mb-4 max-w-xl mx-auto">
                               {sec.subtitle}
                             </p>
                           )}
@@ -371,15 +417,15 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
                           )}
 
                           {sec.ctaText && (
-                            <button className="px-5 py-2.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition">
+                            <button className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg transition">
                               {sec.ctaText}
                             </button>
                           )}
 
                           {sec.items && sec.items.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8 text-left">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-6 sm:mt-8 text-left">
                               {sec.items.map((item, i) => (
-                                <div key={i} className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                                <div key={i} className="p-3.5 sm:p-4 rounded-xl bg-slate-800/40 border border-slate-700/50">
                                   <h3 className="font-semibold text-xs mb-1 text-indigo-300">{item.title}</h3>
                                   <p className="text-[11px] opacity-75">{item.desc}</p>
                                 </div>
@@ -415,7 +461,11 @@ export const WebBuilder: React.FC<WebBuilderProps> = ({
 
       {/* Right Column: Selected Section Inspector */}
       {selectedSection && (
-        <div className="w-80 border-l border-slate-800 bg-slate-900 flex flex-col shrink-0 overflow-y-auto">
+        <div
+          className={`w-full md:w-80 border-t md:border-t-0 md:border-l border-slate-800 bg-slate-900 flex flex-col shrink-0 overflow-y-auto ${
+            mobileTab === "properties" ? "flex flex-1" : "hidden md:flex"
+          }`}
+        >
           <div className="p-4 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Edit3 className="w-4 h-4 text-indigo-400" />
