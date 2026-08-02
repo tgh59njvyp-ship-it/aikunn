@@ -1,0 +1,6 @@
+{
+  "name": "WebDev Studio - All-in-One Web Creation Tool",
+  "description": "Webサイト、プレゼンスライド、バックエンドAPI、データベース、サーバー環境を1つのツールで視覚的に設計・構築できるオールインワン開発プラットフォーム",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
